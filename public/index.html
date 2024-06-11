@@ -1,89 +1,336 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/10.12.2/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/10.12.2/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/10.12.2/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="scripts.js" defer></script>
+</head>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+<body>
+    <div class="sidebar">
+        <h2 class="text-center">GIQ Platform</h2>
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#accounts">Accounts</a>
+        <a href="#risk-analysis">Risk Analysis</a>
+        <a href="#reports">Reports</a>
+        <a href="#settings">Settings</a>
+        <button class="toggle-theme btn btn-secondary mt-3">Dark Theme</button>
+    </div>    
+
+    <div class="content">
+        <div class="topbar glass">
+            <div class="dashboard-header" id="page-title">Dashboard</div>
+        </div>        
+
+        <div id="dashboard" class="content-section">
+            <div class="row mt-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Accounts</h5>
+                            <p class="card-text" id="total-accounts">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Outstanding</h5>
+                            <p class="card-text" id="total-outstanding">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Average Risk Score</h5>
+                            <p class="card-text" id="average-risk-score">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Recent Activities</h5>
+                            <ul id="recent-activities" class="list-group list-group-flush">
+                                <!-- List items to be populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Invoice Payment Distribution</h5>
+                            <div class="chart-container">
+                                <canvas id="paymentsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Risk Distribution</h5>
+                            <div class="chart-container">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Payment Terms Analysis</h5>
+                            <div class="chart-container">
+                                <canvas id="paymentTermsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Average Time to Pay</h5>
+                            <div id="average-time-to-pay" class="summary-card"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Top 5 High-Risk Accounts</h5>
+                            <ul id="high-risk-accounts" class="list-group list-group-flush">
+                                <!-- List items to be populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Critical Alerts</h5>
+                            <ul id="critical-alerts" class="list-group list-group-flush">
+                                <!-- List items to be populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Analysis Section -->
+        <div id="risk-analysis" class="content-section" style="display:none;">
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Risk Analysis</h5>
+                            <div class="form-container">
+                                <label for="search-company">Search by Company Name, Number, or DUNS:</label>
+                                <input type="text" id="search-company" name="search-company" oninput="searchCompanies()">
+                                <ul id="search-results" class="list-group mt-2">
+                                    <!-- Search results will be populated here -->
+                                </ul>
+                                <div id="selected-companies" class="mt-2">
+                                    <!-- Selected companies will be displayed here -->
+                                </div>
+                                <button class="btn btn-primary mt-3" onclick="generateReport()">Generate Report</button>
+                                <button class="btn btn-secondary mt-3" onclick="downloadReport()">Download Report</button>
+                                <button class="btn btn-secondary mt-3" onclick="saveReport()">Save Report</button>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="averagePaymentTimeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                
+
+        <!-- Reports Section -->
+        <div id="reports" class="content-section" style="display:none;">
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Reports</h5>
+                            <div id="reports-list" class="list-group list-group-flush">
+                                <!-- Report content will be populated here -->
+                            </div>
+                            <h5 class="card-title mt-4">Saved Reports</h5>
+                            <ul id="saved-reports-list" class="list-group list-group-flush">
+                                <!-- Saved reports will be populated here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts Section -->
+        <div id="accounts" class="content-section" style="display:none;">
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">Account Data</h5>
+                            <div class="mb-4">
+                                <h6>Add New Account</h6>
+                                <form id="add-account-form">
+                                    <div class="mb-3">
+                                        <label for="account-name" class="form-label">Account Name:</label>
+                                        <input type="text" class="form-control" id="account-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="outstanding-balance" class="form-label">Outstanding Balance:</label>
+                                        <input type="number" class="form-control" id="outstanding-balance" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="risk-score" class="form-label">Risk Score:</label>
+                                        <input type="number" class="form-control" id="risk-score" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="last-payment-date" class="form-label">Last Payment Date:</label>
+                                        <input type="date" class="form-control" id="last-payment-date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="account-status" class="form-label">Account Status:</label>
+                                        <select class="form-select" id="account-status">
+                                            <option value="Active">Active</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Overdue">Overdue</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Account</button>
+                                </form>
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search accounts...">
+                                <button class="btn btn-primary" id="searchButton">Search</button>
+                            </div>
+                            <table class="table table-hover table-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Account Name</th>
+                                        <th scope="col">Outstanding Balance</th>
+                                        <th scope="col">Risk Score</th>
+                                        <th scope="col">Last Payment Date</th>
+                                        <th scope="col">Account Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="account-table">
+                                    <!-- Rows to be populated dynamically -->
+                                </tbody>
+                            </table>
+                            <!-- Pagination Controls -->
+                            <div class="pagination-controls">
+                                <button id="prev-page" class="btn btn-secondary">Previous</button>
+                                <button id="next-page" class="btn btn-secondary">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>       
+
+        <!-- Settings Section -->
+        <div id="settings" class="content-section" style="display:none;">
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card glass">
+                        <div class="card-body">
+                            <h5 class="card-title">User Settings</h5>
+                            <form id="user-settings-form">
+                                <div class="mb-3">
+                                    <label for="notificationPreferences" class="form-label">Notification Preferences:</label>
+                                    <select class="form-select" id="notificationPreferences">
+                                        <option selected>All Notifications</option>
+                                        <option>Only Critical Alerts</option>
+                                        <option>No Notifications</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="themePreferences" class="form-label">Theme Preferences:</label>
+                                    <select class="form-select" id="themePreferences">
+                                        <option selected>System Default</option>
+                                        <option>Light</option>
+                                        <option>Dark</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Account Details -->
+        <div class="modal fade" id="account-details-modal" tabindex="-1" aria-labelledby="account-details-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content glass">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="account-details-modal-label">Account Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="account-details-modal-body">
+                        <!-- Detailed account information to be loaded dynamically -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Data Source Selection -->
+        <div class="modal fade" id="data-source-modal" tabindex="-1" aria-labelledby="data-source-modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content glass">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="data-source-modal-label">Select Data Source</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="data-source-form">
+                            <div class="mb-3">
+                                <label for="data-source" class="form-label">Data Source:</label>
+                                <select class="form-select" id="data-source">
+                                    <option value="yfinance">Yahoo Finance</option>
+                                    <option value="quandl">Quandl</option>
+                                    <option value="stooq">Stooq</option>
+                                    <option value="tiingo">Tiingo</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Select Source</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+</body>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
 </html>
