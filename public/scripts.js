@@ -96,7 +96,7 @@ function loadPaymentPracticesData() {
 // Function to load company data
 function loadCompanyData() {
     console.log('Loading company data from CSV...');
-    Papa.parse('http://localhost:9090/public/payment-practices.csv', {
+    Papa.parse('https://github.com/Commsltd/PIQProto/blob/main/public/payment-practices.csv', {
         download: true,
         header: true,
         complete: function(results) {
