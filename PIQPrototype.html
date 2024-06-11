@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIQ Platform Prototype</title>
+    <!-- Bootstrap CSS for layout and design -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS for additional styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .metric {
+            padding: 20px;
+            text-align: center;
+            background: #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card, .notification-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card h3, .notification-item h5 {
+            margin-top: 0;
+        }
+
+        .search-filter {
+            margin-bottom: 20px;
+        }
+
+        .search-filter input {
+            width: calc(100% - 110px);
+        }
+
+        .search-filter button {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>GIQ Platform Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard Section -->
+        <section class="dashboard">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="metric bg-light">
+                        <h3>Total Accounts</h3>
+                        <p id="total-accounts">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric bg-light">
+                        <h3>Total Outstanding</h3>
+                        <p id="total-outstanding">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric bg-light">
+                        <h3>Average Risk Score</h3>
+                        <p id="average-risk-score">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric bg-light">
+                        <h3>Recent Activities</h3>
+                        <p id="recent-activities">Loading...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <canvas id="payment-timeline-chart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <canvas id="risk-distribution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="summary-card">
+                        <h3>Top 5 High-Risk Accounts</h3>
+                        <ul id="high-risk-accounts">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="summary-card">
+                        <h3>Critical Alerts</h3>
+                        <ul id="critical-alerts">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data View Section -->
+        <section class="data-view mt-5">
+            <h2>Account Data</h2>
+            <div class="search-filter">
+                <input type="text" class="form-control d-inline-block" id="search-input" placeholder="Search accounts...">
+                <button class="btn btn-primary d-inline-block" id="search-button">Search</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="accounts-table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Account Name</th>
+                            <th>Outstanding Balance</th>
+                            <th>Risk Score</th>
+                            <th>Last Payment Date</th>
+                            <th>Account Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Loading...</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Risk Analysis Section -->
+        <section class="risk-analysis mt-5">
+            <h2>Risk Analysis</h2>
+            <div class="chart-container mb-4">
+                <canvas id="risk-analysis-chart"></canvas>
+            </div>
+            <div class="summary-card">
+                <h3>Risk Reports</h3>
+                <ul id="risk-reports">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Notifications Section -->
+        <section class="notifications mt-5">
+            <h2>Notifications and Alerts</h2>
+            <div id="notifications-list">
+                <div class="notification-item">
+                    <h5>No new notifications</h5>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Settings Section -->
+        <section class="user-settings mt-5">
+            <h2>User Settings</h2>
+            <form id="user-settings-form">
+                <div class="form-group">
+                    <label for="notification-preferences">Notification Preferences:</label>
+                    <select class="form-control" id="notification-preferences">
+                        <option value="all">All Notifications</option>
+                        <option value="critical">Critical Only</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </section>
+    </div>
+
+    <!-- jQuery, Bootstrap JS, and Chart.js for interactivity and charting -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Mock data and functions to simulate backend data fetching
+        const mockData = {
+            totalAccounts: 125,
+            totalOutstanding: "$1,250,000",
+            averageRiskScore: 3.5,
+            recentActivities: "Updated 5 minutes ago",
+            highRiskAccounts: ["Account A", "Account B", "Account C", "Account D", "Account E"],
+            criticalAlerts: ["Account F - Overdue", "Account G - High Risk"],
+            accounts: [
+                { name: "Account A", balance: "$100,000", risk: 5, lastPayment: "2024-05-01", status: "Overdue" },
+                { name: "Account B", balance: "$250,000", risk: 4, lastPayment: "2024-04-15", status: "Active" },
+                { name: "Account C", balance: "$75,000", risk: 3, lastPayment: "2024-04-30", status: "Pending" }
+                // More mock accounts can be added here
+            ]
+        };
+
+        // Populate dashboard metrics
+        document.getElementById('total-accounts').textContent = mockData.totalAccounts;
+        document.getElementById('total-outstanding').textContent = mockData.totalOutstanding;
+        document.getElementById('average-risk-score').textContent = mockData.averageRiskScore;
+        document.getElementById('recent-activities').textContent = mockData.recentActivities;
+
+        // Populate high-risk accounts and critical alerts
+        const highRiskList = document.getElementById('high-risk-accounts');
+        highRiskList.innerHTML = '';
+        mockData.highRiskAccounts.forEach(account => {
+            const listItem = document.createElement('li');
+            listItem.textContent = account;
+            highRiskList.appendChild(listItem);
+        });
+
+        const criticalAlertsList = document.getElementById('critical-alerts');
+        criticalAlertsList.innerHTML = '';
+        mockData.criticalAlerts.forEach(alert => {
+            const listItem = document.createElement('li');
+            listItem.textContent = alert;
+            criticalAlertsList.appendChild(listItem);
+        });
+
+        // Populate account data table
+        const accountsTableBody = document.getElementById('accounts-table').getElementsByTagName('tbody')[0];
+        accountsTableBody.innerHTML = '';
+        mockData.accounts.forEach(account => {
+            const row = accountsTableBody.insertRow();
+            row.insertCell(0).textContent = account.name;
+            row.insertCell(1).textContent = account.balance;
+            row.insertCell(2).textContent = account.risk;
+            row.insertCell(3).textContent = account.lastPayment;
+            row.insertCell(4).textContent = account.status;
+        });
+
+        // Search functionality for accounts table
+        document.getElementById('search-button').addEventListener('click', () => {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const rows = accountsTableBody.getElementsByTagName('tr');
+            Array.from(rows).forEach(row => {
+                const accountName = row.cells[0].textContent.toLowerCase();
+                if (accountName.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Chart.js for charts
+        const paymentTimelineCtx = document.getElementById('payment-timeline-chart').getContext('2d');
+        const paymentTimelineChart = new Chart(paymentTimelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May'],
+                datasets: [{
+                    label: 'Payments',
+                    data: [3000, 2000, 4000, 5000, 6000],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const riskDistributionCtx = document.getElementById('risk-distribution-chart').getContext('2d');
+        const riskDistributionChart = new Chart(riskDistributionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                datasets: [{
+                    label: 'Risk Distribution',
+                    data: [40, 30, 30],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 205, 86, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return `${tooltipItem.label}: ${tooltipItem.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const riskAnalysisCtx = document.getElementById('risk-analysis-chart').getContext('2d');
+        const riskAnalysisChart = new Chart(riskAnalysisCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Account A', 'Account B', 'Account C'],
+                datasets: [{
+                    label: 'Risk Score',
+                    data: [5, 4, 3],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
