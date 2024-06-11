@@ -8,7 +8,7 @@ let companyData = [];
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and parsed');
     loadPaymentPracticesData();
-    loadCompanyData(); // Load company data when the page loads
+    loadCompanyData();
     loadSavedReports(); // Load saved reports when the page loads
     setupEventListeners();
     applySavedTheme();
@@ -73,7 +73,7 @@ function setupEventListeners() {
 // Load CSV data and initialize analysis
 function loadPaymentPracticesData() {
     console.log('Loading payment practices data from CSV...');
-    Papa.parse('payment-practices.csv', {
+    Papa.parse('/payment-practices.csv', {  // Use relative path
         download: true,
         header: true,
         complete: function(results) {
@@ -96,7 +96,7 @@ function loadPaymentPracticesData() {
 // Function to load company data
 function loadCompanyData() {
     console.log('Loading company data from CSV...');
-    Papa.parse('payment-practices.csv', {
+    Papa.parse('/payment-practices.csv', {  // Use relative path
         download: true,
         header: true,
         complete: function(results) {
@@ -251,7 +251,7 @@ function toggleTheme() {
     console.log('Theme toggled. Dark mode:', document.body.classList.contains('dark-mode'));
 }
 
-// Populate the summary cards with data
+// Populate the summary cards with data (continued)
 function populateSummaryCards(data) {
     console.log('Populating summary cards...');
     const totalAccounts = data.length;
@@ -270,21 +270,7 @@ function populateSummaryCards(data) {
 function populateHighRiskAccounts(data) {
     console.log('Populating high-risk accounts...');
 
-    // Example risk score calculation logic
-    const calculateRiskScore = (account) => {
-        let riskScore = 0;
-        riskScore += parseFloat(account['Average time to pay']) || 0;
-        riskScore += parseFloat(account['% Invoices not paid within agreed terms']) || 0;
-        riskScore += parseFloat(account['% Invoices paid later than 60 days']) || 0;
-        return riskScore;
-    };
-
-    // Add a risk score to each account
-    data.forEach(account => {
-        account['Risk Score'] = calculateRiskScore(account);
-    });
-
-    // Sort accounts by risk score
+    // Sort accounts by risk score (descending order)
     const sortedByRisk = data.sort((a, b) => b['Risk Score'] - a['Risk Score']);
     const topHighRiskAccounts = sortedByRisk.slice(0, 5);
 
@@ -347,11 +333,6 @@ function initializeCharts(data) {
             const laterThan60Days = data.filter(account => parseFloat(account['% Invoices paid later than 60 days']) > 0).length;
             const noData = data.filter(account => !parseFloat(account['% Invoices paid within 30 days']) && !parseFloat(account['% Invoices paid later than 30 days']) && !parseFloat(account['% Invoices paid later than 60 days'])).length;
 
-            console.log('within30Days:', within30Days);
-            console.log('between31And60Days:', between31And60Days);
-            console.log('laterThan60Days:', laterThan60Days);
-            console.log('noData:', noData);
-
             paymentsChart = new Chart(paymentDistributionCtx, {
                 type: 'pie',
                 data: {
@@ -409,9 +390,6 @@ function initializeCharts(data) {
                 return acc;
             }, {});
 
-            console.log('riskScores:', riskScores);
-            console.log('riskCounts:', riskCounts);
-
             riskChart = new Chart(riskChartCtx, {
                 type: 'bar',
                 data: {
@@ -463,10 +441,6 @@ function initializeCharts(data) {
             const shortestPaymentPeriods = data.map(account => parseFloat(account['Shortest standard payment period']) || 0);
             const longestPaymentPeriods = data.map(account => parseFloat(account['Longest standard payment period']) || 0);
             const maxContractualPeriods = data.map(account => parseFloat(account['Maximum contractual payment period']) || 0);
-
-            console.log('shortestPaymentPeriods:', shortestPaymentPeriods);
-            console.log('longestPaymentPeriods:', longestPaymentPeriods);
-            console.log('maxContractualPeriods:', maxContractualPeriods);
 
             paymentTermsChart = new Chart(paymentTermsChartCtx, {
                 type: 'bar',
@@ -533,8 +507,6 @@ function initializeCharts(data) {
         const averagePaymentTimeChartCtx = document.getElementById('averagePaymentTimeChart')?.getContext('2d');
         if (averagePaymentTimeChartCtx) {
             const averagePaymentTimes = data.map(account => parseFloat(account['Average time to pay']) || 0);
-
-            console.log('averagePaymentTimes:', averagePaymentTimes);
 
             averagePaymentTimeChart = new Chart(averagePaymentTimeChartCtx, {
                 type: 'line',
@@ -755,7 +727,7 @@ function searchCompanies() {
     const filteredCompanies = companyData.filter(company => 
         company.Company.toLowerCase().includes(query) ||
         (company['Company number'] && company['Company number'].includes(query)) ||
-        (company.DUNS && company.DUNS.includes(query)) // assuming DUNS is the DUNS field in the data
+        (company.DUNS && company.DUNS.includes(query))
     );
 
     // Display search results
@@ -801,3 +773,6 @@ document.getElementById('next-page').addEventListener('click', nextPage);
 document.getElementById('prev-page').addEventListener('click', prevPage);
 
 console.log('JavaScript setup complete.');
+
+
+
