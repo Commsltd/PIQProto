@@ -73,7 +73,7 @@ function setupEventListeners() {
 // Load CSV data and initialize analysis
 function loadPaymentPracticesData() {
     console.log('Loading payment practices data from CSV...');
-    Papa.parse('https://github.com/Commsltd/PIQProto/blob/main/public/payment-practices.csv', {
+    Papa.parse('payment-practices.csv', {
         download: true,
         header: true,
         complete: function(results) {
@@ -96,7 +96,7 @@ function loadPaymentPracticesData() {
 // Function to load company data
 function loadCompanyData() {
     console.log('Loading company data from CSV...');
-    Papa.parse('https://github.com/Commsltd/PIQProto/blob/main/public/payment-practices.csv', {
+    Papa.parse('payment-practices.csv', {
         download: true,
         header: true,
         complete: function(results) {
